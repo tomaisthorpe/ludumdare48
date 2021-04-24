@@ -1,7 +1,9 @@
 local Class = require("hump.class")
 
 local Player = Class {
-  init = function(self, world, x, y)
+  init = function(self, game, world, x, y)
+    self.game = game
+
     self.object = world:newRectangleCollider(x - 10, y - 10, 20, 20)
     self.object:setCollisionClass('Player')
     self.object:setObject(self)
@@ -35,15 +37,29 @@ function Player:update(dt)
   if love.keyboard.isDown('down') or love.keyboard.isDown('s') then
     self.object:applyForce(0, self.speed * self.object:getMass())
   end
+
+
+  local _, _, cx, cy =  self.game:getMousePosition()
+
+  local dx = cx - self:getX()
+  local dy = cy - self:getY()
+  local theta = math.atan2(dy, dx)
+
+  self.object:setAngle(theta)
 end
 
 function Player:draw()
+  love.graphics.push()
+
   love.graphics.setColor(1, 0, 1)
+  
+  -- Translate as we need to draw at 0,0 for rotation
+  love.graphics.translate(self:getX(), self:getY())
+  love.graphics.rotate(self.object:getAngle())
 
-  local x = self:getX()
-  local y = self:getY()
+  love.graphics.polygon("fill", -10, -10, 10, 0, -10, 10)
 
-  love.graphics.polygon("fill", x - 10, y + 10, x, y - 10, x + 10, y + 10)
+  love.graphics.pop()
 end
 
 return Player

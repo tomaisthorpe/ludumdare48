@@ -22,7 +22,7 @@ function game:enter()
   self.planet = Planet()
 
   -- Create the player
-  self.player = Player(self.planet.world, 100, 100)
+  self.player = Player(self, self.planet.world, 100, 100)
 
   self.camera = Camera(0, 0, 800, 600)
   self.camera:setFollowStyle('TOPDOWN_TIGHT')
@@ -60,6 +60,17 @@ function game:draw()
   love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), game.translate[2])
   love.graphics.rectangle("fill", love.graphics.getWidth() - game.translate[1], 0, game.translate[1], love.graphics.getHeight())
   love.graphics.rectangle("fill", 0, love.graphics.getHeight() - game.translate[2], love.graphics.getWidth(), game.translate[2])
+end
+
+function game:getMousePosition()
+  local mx, my = love.mouse.getPosition()
+
+  mx = (mx - self.translate[1]) / self.scaling
+  my = (my - self.translate[2]) / self.scaling
+
+  local cx, cy = self.camera:toWorldCoords(mx, my)
+
+  return mx, my, cx, cy
 end
 
 function game:resize()
