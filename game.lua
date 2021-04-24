@@ -116,7 +116,10 @@ function Game:draw()
 end
 
 function Game:drawUI()
-  -- Minimap
+  self:drawMinimap()
+end
+
+function Game:drawMinimap()
   love.graphics.push()
   love.graphics.translate(800 - config.minimapSize[1], 600 - config.minimapSize[2])
 
@@ -124,7 +127,6 @@ function Game:drawUI()
   love.graphics.rectangle("fill", 0, 0, config.minimapSize[1], config.minimapSize[2])
 
   self.planet:drawMinimap()
-
 
   -- Draw player on minimap
   local ms = self.planet.minimapScale

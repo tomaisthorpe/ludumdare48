@@ -10,10 +10,12 @@ local System = {
   planets = {},
   planetIcons = {},
   nextPlanet = 1,
+  lives = 3,
 }
 
 function System:init()
   self:calculateScaling()
+  self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
 end
 
 function System:enter()
@@ -26,8 +28,21 @@ function System:resume(prev, status)
     if self.nextPlanet == #self.planets then
       -- GAME COMPLETE!
       love.event.quit()
+      love.window.showMessageBox("Game complete!", "You've cleared the solar system!")
     else
       self.nextPlanet = self.nextPlanet + 1
+      love.window.showMessageBox("Planet cleared!", "All enemies have been killed. Clear the next planet.")
+    end
+  end
+
+  if status == "killed" then
+
+    self.lives = self.lives - 1
+    if self.lives == 0 then
+      love.window.showMessageBox("Game over!", "You lost all your lives. Start the game again to try at a new solar system")
+      love.event.quit()
+    else
+      love.window.showMessageBox("You were killed.", "Try again. You have ".. self.lives .. " more lives.")
     end
   end
 end
@@ -49,6 +64,8 @@ function System:draw()
     love.graphics.pop()
   end
 
+  self:drawUI()
+
   love.graphics.pop()
 
   -- Draw borders
@@ -57,6 +74,14 @@ function System:draw()
   love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), System.translate[2])
   love.graphics.rectangle("fill", love.graphics.getWidth() - System.translate[1], 0, System.translate[1], love.graphics.getHeight())
   love.graphics.rectangle("fill", 0, love.graphics.getHeight() - System.translate[2], love.graphics.getWidth(), System.translate[2])
+end
+
+function System:drawUI()
+  -- Lives
+  love.graphics.setFont(self.font)
+  love.graphics.setColor(1, 1, 1)
+
+  love.graphics.printf("Lives:" .. self.lives, 10, 10, 800, "center")
 end
 
 function System:generate()

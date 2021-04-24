@@ -60,7 +60,7 @@ end
 
 
 function Player:damage(dmg)
-  self.health = self.health - dmg * 0.1
+  self.health = self.health - dmg * 0.5
 
   if self.health <= 0 then
     self.dead = true
