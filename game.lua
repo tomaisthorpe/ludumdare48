@@ -1,4 +1,5 @@
 local config = require("config")
+local World = require("world")
 
 local game = {
   translate = {0, 0},
@@ -14,6 +15,10 @@ function game:init()
   game:calculateScaling()
 end
 
+function game:enter()
+  self.world = World()
+end
+
 function game:draw()
   love.graphics.push()
   love.graphics.translate(game.translate[1], game.translate[2])
@@ -22,6 +27,7 @@ function game:draw()
   love.graphics.setColor(1, 1, 1)
 
   -- Draw game
+  love.graphics.draw(self.world.mapCanvas)
   
   love.graphics.pop()
 
