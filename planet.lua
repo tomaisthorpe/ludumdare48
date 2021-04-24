@@ -9,6 +9,9 @@ local Planet = Class{
 
     self.world = wf.newWorld(0, 0, true)
     self.world:addCollisionClass('Player')
+    self.world:addCollisionClass('Enemy')
+    self.world:addCollisionClass('Solid')
+    self.world:addCollisionClass('Bullet')
 
     self:generate()
     print ("init")
@@ -23,11 +26,11 @@ function Planet:generate()
   -- TODO randomize planet size
   self.size = config.planetSize
 
-  local seed = love.math.random() * 2
+  local seed = love.math.random()
 
   -- Generate the heightmap
   -- TODO many frequency
-  local freq = 0.01
+  local freq = 0.008
   for x = 1, self.size[1] / 4 do
     for y = 1, self.size[2] / 4 do
       self.grid[x] = self.grid[x] or {}
@@ -37,13 +40,17 @@ function Planet:generate()
 
   -- Add bounding box
   local b1 = self.world:newRectangleCollider(0, 0, 50, self.size[2])
+  b1:setCollisionClass('Solid')
   b1:setType('static')
   local b2 = self.world:newRectangleCollider(0, 0, self.size[1], 50)
   b2:setType('static')
+  b2:setCollisionClass('Solid')
   local b3 = self.world:newRectangleCollider(0, self.size[2] - 50, self.size[1], 50)
   b3:setType('static')
+  b3:setCollisionClass('Solid')
   local b4 = self.world:newRectangleCollider(self.size[1] - 50, 0, 50, self.size[2])
   b4:setType('static')
+  b4:setCollisionClass('Solid')
 
   self:createCanvas()
   self:createMinimap()
@@ -115,7 +122,10 @@ end
 
 function Planet:draw()
   love.graphics.draw(self.mapCanvas)
-  self.world:draw()
+
+  if config.physicsDebug then
+    self.world:draw()
+  end
 end
 
 function Planet:drawMinimap()

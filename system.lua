@@ -12,11 +12,6 @@ local System = {
 }
 
 function System:init()
-  -- Window setup
-  love.window.setMode(800, 600)
-  love.graphics.setDefaultFilter("nearest", "nearest")
-  love.window.setFullscreen(config.fullscreen)
-
   self:calculateScaling()
 end
 

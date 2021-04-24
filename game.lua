@@ -25,6 +25,7 @@ function Game:enter(prev, planet)
   self.camera:setFollowStyle('TOPDOWN_TIGHT')
   self.camera:setBounds(0, 0, self.planet.size[1], self.planet.size[2])
 
+  self.entities = {}
 end
 
 function Game:update(dt)
@@ -33,6 +34,14 @@ function Game:update(dt)
 
   self.camera:update(dt)
   self.camera:follow(self.player:getX(), self.player:getY())
+
+  for i, e in ipairs(self.entities) do
+    if e.dead then
+      table.remove(self.entities, i)
+    else
+      e:update(dt)
+    end
+  end
 end
 
 function Game:draw()
@@ -47,6 +56,12 @@ function Game:draw()
   -- Draw game
   self.planet:draw()
   self.player:draw()
+
+  for e = 1, #self.entities do
+    if not self.entities[e].dead then
+      self.entities[e]:draw()
+    end
+  end
   
   self.camera:detach()
 
@@ -80,11 +95,26 @@ function Game:drawUI()
   love.graphics.setColor(1, 1, 0)
   love.graphics.rectangle("fill", px - 2, py - 2, 4, 4)
 
+  -- Draw bullets?
+  for e=1, #self.entities do
+    if not self.entities[e].dead then
+      local x = self.entities[e]:getX() * ms
+      local y = self.entities[e]:getY() * ms
+
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.rectangle("fill", x - 2, y - 2, 1, 1)
+    end
+   end
+
   -- Border
   love.graphics.setColor(config.minimapBorderColor)
   love.graphics.rectangle("line", -1, -1, config.minimapSize[1], config.minimapSize[2])
 
   love.graphics.pop()
+end
+
+function Game:addEntity(entity)
+  table.insert(self.entities, entity)
 end
 
 function Game:getMousePosition()
@@ -117,7 +147,7 @@ function Game:keypressed(key)
   if key == "escape" then 
     love.event.quit()
   end
-  if key == "space" then
+  if key == "q" then
   gamestate.pop()
   end
 end
