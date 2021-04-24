@@ -9,8 +9,6 @@ local Planet = Class{
     self.world = wf.newWorld(0, 0, true)
     self.world:addCollisionClass('Player')
 
-
-
     self:generate()
   end,
   size = {0,0},
@@ -52,6 +50,16 @@ function Planet:generate()
   love.graphics.pop()
 
   love.graphics.setCanvas()
+
+  -- Add bounding box
+  local b1 = self.world:newRectangleCollider(0, 0, 50, self.size[2])
+  b1:setType('static')
+  local b2 = self.world:newRectangleCollider(0, 0, self.size[1], 50)
+  b2:setType('static')
+  local b3 = self.world:newRectangleCollider(0, self.size[2] - 50, self.size[1], 50)
+  b3:setType('static')
+  local b4 = self.world:newRectangleCollider(self.size[1] - 50, 0, 50, self.size[2])
+  b4:setType('static')
 end
 
 function Planet:update(dt)

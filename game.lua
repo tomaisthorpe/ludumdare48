@@ -1,3 +1,5 @@
+local Camera = require("Camera")
+
 local config = require("config")
 local Planet = require("planet")
 local Player = require("player")
@@ -21,11 +23,19 @@ function game:enter()
 
   -- Create the player
   self.player = Player(self.planet.world, 100, 100)
+
+  self.camera = Camera(0, 0, 800, 600)
+  self.camera:setFollowStyle('TOPDOWN_TIGHT')
+  self.camera:setBounds(0, 0, self.planet.size[1], self.planet.size[2])
+
 end
 
 function game:update(dt)
   self.planet:update(dt)
   self.player:update(dt)
+
+  self.camera:update(dt)
+  self.camera:follow(self.player:getX(), self.player:getY())
 end
 
 function game:draw()
@@ -35,10 +45,13 @@ function game:draw()
 
   love.graphics.setColor(1, 1, 1)
 
+  self.camera:attach()
+
   -- Draw game
   self.planet:draw()
   self.player:draw()
   
+  self.camera:detach()
   love.graphics.pop()
 
   -- Draw borders
