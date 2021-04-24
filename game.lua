@@ -1,4 +1,5 @@
 local Camera = require("Camera")
+local gamestate = require "hump.gamestate"
 
 local config = require("config")
 local Planet = require("planet")
@@ -11,14 +12,10 @@ local Game = {
 
 function Game:init()
   -- Window setup
-  love.window.setMode(800, 600)
-  love.graphics.setDefaultFilter("nearest", "nearest")
-  love.window.setFullscreen(config.fullscreen)
-
   Game:calculateScaling()
 end
 
-function Game:enter(planet)
+function Game:enter(prev, planet)
   self.planet = planet
 
   -- Create the player
@@ -91,6 +88,9 @@ end
 function Game:keypressed(key)
   if key == "escape" then 
     love.event.quit()
+  end
+  if key == "space" then
+  gamestate.pop()
   end
 end
 

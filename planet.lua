@@ -4,12 +4,14 @@ local wf = require("windfield")
 local config = require("config")
 
 local Planet = Class{
-  init = function(self)
+  init = function(self, p)
+    self.p = p
 
     self.world = wf.newWorld(0, 0, true)
     self.world:addCollisionClass('Player')
 
     self:generate()
+    print ("init")
   end,
   size = {0,0},
   grid = {},
@@ -20,38 +22,17 @@ function Planet:generate()
   -- TODO randomize planet size
   self.size = config.planetSize
 
-  local seed = love.math.random()
+  local seed = love.math.random() * 2
 
   -- Generate the heightmap
   -- TODO many frequency
   local freq = 0.01
-  for x = 1, self.size[1] do
-    for y = 1, self.size[2] do
+  for x = 1, self.size[1] / 4 do
+    for y = 1, self.size[2] / 4 do
       self.grid[x] = self.grid[x] or {}
       self.grid[x][y] = love.math.noise( freq * x, freq * y,seed)
     end
   end
-
-  -- Draw the canvas
-  self.mapCanvas = love.graphics.newCanvas(self.size[1], self.size[2])
-  love.graphics.setCanvas(self.mapCanvas)
-
-  love.graphics.push()
-  for x = 1, #self.grid do
-    for y = 1, #self.grid[x] do
-      local min = 35
-      local max = 40
-
-      local l = min + (max - min) * self.grid[x][y]
-
-      love.graphics.setColor(HSL(126, 40, l, 1))
-      love.graphics.rectangle("fill", x, y, 1, 1)
-    end
-  end
-
-  love.graphics.pop()
-
-  love.graphics.setCanvas()
 
   -- Add bounding box
   local b1 = self.world:newRectangleCollider(0, 0, 50, self.size[2])
@@ -62,6 +43,42 @@ function Planet:generate()
   b3:setType('static')
   local b4 = self.world:newRectangleCollider(self.size[1] - 50, 0, 50, self.size[2])
   b4:setType('static')
+
+  self:drawCanvas()
+end
+
+function Planet:drawCanvas()
+  self.mapCanvas = love.graphics.newCanvas(self.size[1], self.size[2])
+  love.graphics.setCanvas(self.mapCanvas)
+
+  love.graphics.push()
+
+  love.graphics.scale(4, 4)
+
+  local hue = 126
+  if self.p == 2 then
+    hue = 9
+  elseif self.p == 3 then
+    hue = 256
+  end
+
+  for x = 1, #self.grid do
+    for y = 1, #self.grid[x] do
+      local min = 30
+      local max = 60
+
+      local l = min + (max - min) * self.grid[x][y]
+
+
+
+      love.graphics.setColor(HSL(hue, 26, l, 1))
+      love.graphics.rectangle("fill", x, y, 1, 1)
+    end
+  end
+
+  love.graphics.pop()
+
+  love.graphics.setCanvas()
 end
 
 function Planet:update(dt)
@@ -69,9 +86,8 @@ function Planet:update(dt)
 end
 
 function Planet:draw()
+  love.graphics.setColor(1, 1, 1)
   love.graphics.draw(self.mapCanvas)
-
-
   self.world:draw()
 end
 

@@ -1,11 +1,22 @@
 local Gamestate = require("hump.gamestate")
 
+local config = require("config")
 local System = require("system")
-local game = require("game")
+local Game = require("game")
+local Planet = require("planet")
 
 function love.load()
   Gamestate.registerEvents()
-  Gamestate.switch(System)
+  love.window.setMode(800, 600)
+  love.graphics.setDefaultFilter("nearest", "nearest")
+  love.window.setFullscreen(config.fullscreen)
+
+
+  if config.skipSystem then
+    Gamestate.switch(Game, Planet())
+  else
+    Gamestate.switch(System)
+  end
 
   love.window.setTitle("Ludum Dare 48")
 end

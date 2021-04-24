@@ -1,3 +1,5 @@
+local Gamestate = require("hump.gamestate")
+
 local config = require("config")
 local Game = require("game")
 local Planet = require("planet")
@@ -6,6 +8,7 @@ local System = {
   translate = {0, 0},
   scaling = 1,
   planets = {},
+  planetIcons = {},
 }
 
 function System:init()
@@ -28,12 +31,10 @@ function System:draw()
 
   love.graphics.setColor(1, 1, 1)
 
-  -- Work out location of planets
-  local xInterval = 800 / (#self.planets + 1)
-
-  for p = 1, #self.planets do
+  for p = 1, #self.planetIcons do
+    local icon = self.planetIcons[p]
     love.graphics.push()
-    love.graphics.translate( p * xInterval, 300)
+    love.graphics.translate(icon.x, icon.y)
 
     self.planets[p]:drawMini()
 
@@ -51,8 +52,16 @@ function System:draw()
 end
 
 function System:generate()
+  local xInterval = 800 / (config.planetsPerSystem + 1)
+
   for p = 1, config.planetsPerSystem do
-    table.insert(self.planets, Planet())
+    local planet = Planet(p)
+    table.insert(self.planets, planet)
+
+    table.insert(self.planetIcons, {
+      x = p * xInterval,
+      y = 300,
+    })
   end
 end
 
@@ -72,5 +81,34 @@ function System:keypressed(key)
   end
 end
 
+function System:mousereleased(x, y, button)
+  if button ~= 1 then
+    return
+  end
+
+  local mx, my = self:getMousePosition()
+  -- Check if any planets are in the correct place
+  for p = 1, #self.planetIcons do
+    local icon = self.planetIcons[p]
+    local dx = math.abs(mx - icon.x)
+    local dy = math.abs(my - icon.y)
+    local d = math.sqrt(dx * dx + dy * dy)
+
+    -- User must have clicked on the planet!
+    if d <= config.miniPlanetRadius then
+      print(self.planets[p].size.x)
+      Gamestate.push(Game, self.planets[p])
+    end
+  end
+end
+
+function System:getMousePosition()
+  local mx, my = love.mouse.getPosition()
+
+  mx = (mx - self.translate[1]) / self.scaling
+  my = (my - self.translate[2]) / self.scaling
+
+  return mx, my
+end
 
 return System
