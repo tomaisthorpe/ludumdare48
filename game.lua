@@ -49,6 +49,8 @@ function Game:draw()
   self.player:draw()
   
   self.camera:detach()
+
+  self:drawUI()
   love.graphics.pop()
 
   -- Draw borders
@@ -57,6 +59,32 @@ function Game:draw()
   love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), Game.translate[2])
   love.graphics.rectangle("fill", love.graphics.getWidth() - Game.translate[1], 0, Game.translate[1], love.graphics.getHeight())
   love.graphics.rectangle("fill", 0, love.graphics.getHeight() - Game.translate[2], love.graphics.getWidth(), Game.translate[2])
+end
+
+function Game:drawUI()
+  -- Minimap
+  love.graphics.push()
+  love.graphics.translate(800 - config.minimapSize[1], 600 - config.minimapSize[2])
+
+  love.graphics.setColor(config.minimapColor)
+  love.graphics.rectangle("fill", 0, 0, config.minimapSize[1], config.minimapSize[2])
+
+  self.planet:drawMinimap()
+
+
+  -- Draw player on minimap
+  local ms = self.planet.minimapScale
+  local px = self.player:getX() * ms
+  local py = self.player:getY() * ms
+
+  love.graphics.setColor(1, 1, 0)
+  love.graphics.rectangle("fill", px - 2, py - 2, 4, 4)
+
+  -- Border
+  love.graphics.setColor(config.minimapBorderColor)
+  love.graphics.rectangle("line", -1, -1, config.minimapSize[1], config.minimapSize[2])
+
+  love.graphics.pop()
 end
 
 function Game:getMousePosition()

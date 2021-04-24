@@ -15,6 +15,7 @@ local Planet = Class{
   end,
   size = {0,0},
   grid = {},
+  minimapScale = 1,
 }
 
 function Planet:generate()
@@ -44,10 +45,11 @@ function Planet:generate()
   local b4 = self.world:newRectangleCollider(self.size[1] - 50, 0, 50, self.size[2])
   b4:setType('static')
 
-  self:drawCanvas()
+  self:createCanvas()
+  self:createMinimap()
 end
 
-function Planet:drawCanvas()
+function Planet:createCanvas()
   self.mapCanvas = love.graphics.newCanvas(self.size[1], self.size[2])
   love.graphics.setCanvas(self.mapCanvas)
 
@@ -64,8 +66,8 @@ function Planet:drawCanvas()
 
   for x = 1, #self.grid do
     for y = 1, #self.grid[x] do
-      local min = 30
-      local max = 60
+      local min = 0
+      local max = 100
 
       local l = min + (max - min) * self.grid[x][y]
 
@@ -81,14 +83,43 @@ function Planet:drawCanvas()
   love.graphics.setCanvas()
 end
 
+function Planet:createMinimap()
+  -- This is the scale used for adding entities 
+  self.minimapScale = config.minimapSize[1] / self.size[1]
+
+  self.minimapCanvas = love.graphics.newCanvas(config.minimapSize[1], config.minimapSize[2])
+  love.graphics.setCanvas(self.minimapCanvas)
+
+  love.graphics.push()
+
+  local drawScale = config.minimapSize[1] / #self.grid
+  love.graphics.scale(drawScale, drawScale)
+
+  for x = 1, #self.grid do
+    for y = 1, #self.grid[x] do
+      local brightness = math.ceil(self.grid[x][y] * 8) / 8
+      love.graphics.setColor(brightness, brightness, brightness)
+      love.graphics.rectangle("fill", x, y, 1, 1)
+    end
+  end
+
+  love.graphics.pop()
+
+  love.graphics.setCanvas()
+end
+
+
 function Planet:update(dt)
   self.world:update(dt)
 end
 
 function Planet:draw()
-  love.graphics.setColor(1, 1, 1)
   love.graphics.draw(self.mapCanvas)
   self.world:draw()
+end
+
+function Planet:drawMinimap()
+  love.graphics.draw(self.minimapCanvas)
 end
 
 function Planet:drawMini()
