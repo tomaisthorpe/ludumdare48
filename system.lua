@@ -9,6 +9,7 @@ local System = {
   scaling = 1,
   planets = {},
   planetIcons = {},
+  nextPlanet = 1,
 }
 
 function System:init()
@@ -17,6 +18,18 @@ end
 
 function System:enter()
   self:generate()
+end
+
+function System:resume(prev, status)
+  -- If status complete, then unlock next planet
+  if status == "complete" then
+    if self.nextPlanet == #self.planets then
+      -- GAME COMPLETE!
+      love.event.quit()
+    else
+      self.nextPlanet = self.nextPlanet + 1
+    end
+  end
 end
 
 function System:draw()
@@ -31,7 +44,7 @@ function System:draw()
     love.graphics.push()
     love.graphics.translate(icon.x, icon.y)
 
-    self.planets[p]:drawMini()
+    self.planets[p]:drawMini(self.nextPlanet == p)
 
     love.graphics.pop()
   end
@@ -92,8 +105,9 @@ function System:mousereleased(x, y, button)
 
     -- User must have clicked on the planet!
     if d <= config.miniPlanetRadius then
-      print(self.planets[p].size.x)
-      Gamestate.push(Game, self.planets[p])
+      if self.nextPlanet == p then
+        Gamestate.push(Game, self.planets[p])
+      end
     end
   end
 end

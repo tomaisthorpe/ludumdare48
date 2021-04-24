@@ -12,7 +12,7 @@ local Bullet =  Class{
     self.object:setCollisionClass('Bullet')
   end,
   dead = false,
-  damage = 10
+  damage = 100
 }
 
 function Bullet:getX()

@@ -11,9 +11,8 @@ function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.window.setFullscreen(config.fullscreen)
 
-
   if config.skipSystem then
-    Gamestate.switch(Game, Planet(1, 1))
+    Gamestate.switch(Game, Planet(1, 0.25))
   else
     Gamestate.switch(System)
   end

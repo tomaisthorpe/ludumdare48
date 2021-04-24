@@ -1,5 +1,5 @@
 local Camera = require("Camera")
-local gamestate = require "hump.gamestate"
+local Gamestate = require "hump.gamestate"
 
 local config = require("config")
 local Planet = require("planet")
@@ -63,6 +63,13 @@ function Game:update(dt)
       e:update(dt)
     end
   end
+
+  if #self.enemies == 0 then
+    Gamestate.pop("complete")
+  end
+end
+
+function Game:enemyKilled()
 end
 
 function Game:draw()

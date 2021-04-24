@@ -14,13 +14,13 @@ local Planet = Class{
     self.world:addCollisionClass('Solid')
     self.world:addCollisionClass('Bullet')
 
+    self.size = {0,0}
+    self.grid = {}
+    self.minimapScale = 1
+    self.enemyLocations = {}
+
     self:generate()
-    print ("init")
-  end,
-  size = {0,0},
-  grid = {},
-  minimapScale = 1,
-  enemyLocations = {},
+  end
 }
 
 function Planet:generate()
@@ -58,7 +58,7 @@ function Planet:generate()
   self:createMinimap()
 
   -- Create some enemy spawns
-  for e = 1, 15 * self.difficulty do
+  for e = 1, 5 * self.difficulty do
     local x = love.math.random(200, self.size[1] - 200)
     local y = love.math.random(200, self.size[2] - 200)
 
@@ -145,7 +145,13 @@ function Planet:drawMinimap()
   love.graphics.draw(self.minimapCanvas)
 end
 
-function Planet:drawMini()
+function Planet:drawMini(current)
+  local alpha = 0.25
+  if current then
+    alpha = 1
+  end
+
+  love.graphics.setColor(1, 1, 1, alpha)
   love.graphics.stencil(sphereStencil, "replace", 1)
   love.graphics.setStencilTest("greater", 0)
 
