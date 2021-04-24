@@ -4,22 +4,22 @@ local config = require("config")
 local Planet = require("planet")
 local Player = require("player")
 
-local game = {
+local Game = {
   translate = {0, 0},
   scaling = 1,
 }
 
-function game:init()
+function Game:init()
   -- Window setup
   love.window.setMode(800, 600)
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.window.setFullscreen(config.fullscreen)
 
-  game:calculateScaling()
+  Game:calculateScaling()
 end
 
-function game:enter()
-  self.planet = Planet()
+function Game:enter(planet)
+  self.planet = planet
 
   -- Create the player
   self.player = Player(self, self.planet.world, 100, 100)
@@ -30,7 +30,7 @@ function game:enter()
 
 end
 
-function game:update(dt)
+function Game:update(dt)
   self.planet:update(dt)
   self.player:update(dt)
 
@@ -38,10 +38,10 @@ function game:update(dt)
   self.camera:follow(self.player:getX(), self.player:getY())
 end
 
-function game:draw()
+function Game:draw()
   love.graphics.push()
-  love.graphics.translate(game.translate[1], game.translate[2])
-  love.graphics.scale(game.scaling)
+  love.graphics.translate(Game.translate[1], Game.translate[2])
+  love.graphics.scale(Game.scaling)
 
   love.graphics.setColor(1, 1, 1)
 
@@ -56,13 +56,13 @@ function game:draw()
 
   -- Draw borders
   love.graphics.setColor(config.borderColor[1], config.borderColor[2], config.borderColor[3])
-  love.graphics.rectangle("fill", 0, 0, game.translate[1], love.graphics.getHeight())
-  love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), game.translate[2])
-  love.graphics.rectangle("fill", love.graphics.getWidth() - game.translate[1], 0, game.translate[1], love.graphics.getHeight())
-  love.graphics.rectangle("fill", 0, love.graphics.getHeight() - game.translate[2], love.graphics.getWidth(), game.translate[2])
+  love.graphics.rectangle("fill", 0, 0, Game.translate[1], love.graphics.getHeight())
+  love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), Game.translate[2])
+  love.graphics.rectangle("fill", love.graphics.getWidth() - Game.translate[1], 0, Game.translate[1], love.graphics.getHeight())
+  love.graphics.rectangle("fill", 0, love.graphics.getHeight() - Game.translate[2], love.graphics.getWidth(), Game.translate[2])
 end
 
-function game:getMousePosition()
+function Game:getMousePosition()
   local mx, my = love.mouse.getPosition()
 
   mx = (mx - self.translate[1]) / self.scaling
@@ -73,25 +73,25 @@ function game:getMousePosition()
   return mx, my, cx, cy
 end
 
-function game:resize()
+function Game:resize()
   love.window.setMode(800, 600)
-  game:calculateScaling()
+  Game:calculateScaling()
 end
 
-function game:calculateScaling()
+function Game:calculateScaling()
   local minEdge = love.graphics.getHeight()
   if minEdge < love.graphics.getWidth() then
-    game.scaling = minEdge / 600
-     game.translate = {(love.graphics.getWidth() - (800 * game.scaling)) / 2, 0}
+    Game.scaling = minEdge / 600
+     Game.translate = {(love.graphics.getWidth() - (800 * Game.scaling)) / 2, 0}
   else
-    game.scaling = love.graphics.getWidth() / 800
+    Game.scaling = love.graphics.getWidth() / 800
   end
 end
 
-function game:keypressed(key)
+function Game:keypressed(key)
   if key == "escape" then 
     love.event.quit()
   end
 end
 
-return game
+return Game

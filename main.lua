@@ -1,10 +1,11 @@
 local Gamestate = require("hump.gamestate")
 
+local System = require("system")
 local game = require("game")
 
 function love.load()
   Gamestate.registerEvents()
-  Gamestate.switch(game)
+  Gamestate.switch(System)
 
   love.window.setTitle("Ludum Dare 48")
 end

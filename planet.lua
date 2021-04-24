@@ -20,13 +20,15 @@ function Planet:generate()
   -- TODO randomize planet size
   self.size = config.planetSize
 
+  local seed = love.math.random()
+
   -- Generate the heightmap
   -- TODO many frequency
-  local freq = 0.004
+  local freq = 0.01
   for x = 1, self.size[1] do
     for y = 1, self.size[2] do
       self.grid[x] = self.grid[x] or {}
-      self.grid[x][y] = love.math.noise( freq * x, freq * y)
+      self.grid[x][y] = love.math.noise( freq * x, freq * y,seed)
     end
   end
 
@@ -71,6 +73,26 @@ function Planet:draw()
 
 
   self.world:draw()
+end
+
+function Planet:drawMini()
+  love.graphics.stencil(sphereStencil, "replace", 1)
+  love.graphics.setStencilTest("greater", 0)
+
+  love.graphics.push()
+  love.graphics.translate(-config.miniPlanetRadius, -config.miniPlanetRadius)
+  local scale = config.miniPlanetRadius * 2 / self.size[2]
+  love.graphics.scale(scale, scale)
+
+  love.graphics.draw(self.mapCanvas)
+
+  love.graphics.pop()
+
+  love.graphics.setStencilTest()
+end
+
+function sphereStencil()
+  love.graphics.circle("fill", 0, 0, 60)
 end
 
 -- Converts HSL to RGB
