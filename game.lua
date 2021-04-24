@@ -69,6 +69,10 @@ function Game:update(dt)
   end
 end
 
+function Game:gameOver()
+  Gamestate.pop("killed")
+end
+
 function Game:enemyKilled()
 end
 

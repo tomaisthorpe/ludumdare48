@@ -12,6 +12,7 @@ local Player = Class {
     self.object:setObject(self)
     self.object:setFixedRotation(true)
     self.object:setLinearDamping(5)
+    self.health = 100
   end,
   speed = 5001,
 
@@ -57,6 +58,17 @@ function Player:update(dt)
   self.object:setAngle(theta)
 end
 
+
+function Player:damage(dmg)
+  self.health = self.health - dmg * 0.1
+
+  if self.health <= 0 then
+    self.dead = true
+    self.health = 0
+    self.game:gameOver()
+  end
+end
+
 function Player:shoot()
   -- Check the user can actually shoot
   if self.lastShot >= love.timer.getTime() - self.fireRate then
@@ -71,7 +83,7 @@ function Player:shoot()
   local dy = cy - self:getY()
   local theta = math.atan2(dy, dx)
 
-  local bullet = Bullet(self.game, self.world, self:getX(), self:getY(), theta)
+  local bullet = Bullet(self.game, self.world, self:getX(), self:getY(), theta, 'Enemy')
   self.game:addEntity(bullet)
 end
 

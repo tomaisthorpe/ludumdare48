@@ -9,10 +9,10 @@ local Planet = Class{
     self.difficulty = difficulty
 
     self.world = wf.newWorld(0, 0, true)
-    self.world:addCollisionClass('Player')
-    self.world:addCollisionClass('Enemy')
-    self.world:addCollisionClass('Solid')
     self.world:addCollisionClass('Bullet')
+    self.world:addCollisionClass('Enemy', {ignores={'Bullet'}})
+    self.world:addCollisionClass('Player', {ignores={'Bullet'}})
+    self.world:addCollisionClass('Solid')
 
     self.size = {0,0}
     self.grid = {}
