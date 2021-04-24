@@ -1,21 +1,26 @@
 local Class = require("hump.class")
+local wf = require("windfield")
 
 local config = require("config")
 
-local World = Class{
+local Planet = Class{
   init = function(self)
 
-    self:generate()
+    self.world = wf.newWorld(0, 0, true)
+    self.world:addCollisionClass('Player')
 
+
+
+    self:generate()
   end,
   size = {0,0},
   grid = {},
 }
 
-function World:generate()
-  -- Calculate world size
-  -- TODO randomize world size
-  self.size = config.worldSize
+function Planet:generate()
+  -- Calculate planet size
+  -- TODO randomize planet size
+  self.size = config.planetSize
 
   -- Generate the heightmap
   -- TODO many frequency
@@ -30,10 +35,12 @@ function World:generate()
   -- Draw the canvas
   self.mapCanvas = love.graphics.newCanvas(self.size[1], self.size[2])
   love.graphics.setCanvas(self.mapCanvas)
+
+  love.graphics.push()
   for x = 1, #self.grid do
     for y = 1, #self.grid[x] do
-      local min = 25
-      local max = 35
+      local min = 35
+      local max = 40
 
       local l = min + (max - min) * self.grid[x][y]
 
@@ -42,7 +49,20 @@ function World:generate()
     end
   end
 
+  love.graphics.pop()
+
   love.graphics.setCanvas()
+end
+
+function Planet:update(dt)
+  self.world:update(dt)
+end
+
+function Planet:draw()
+  love.graphics.draw(self.mapCanvas)
+
+
+  self.world:draw()
 end
 
 -- Converts HSL to RGB
@@ -61,4 +81,4 @@ function HSL(h, s, l, a)
 	end return (r+m),(g+m),(b+m),a
 end
 
-return World
+return Planet

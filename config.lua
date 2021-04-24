@@ -1,8 +1,9 @@
 local config = {
-  fullscreen = false,
+  fullscreen = true,
   borderColor = {9 / 255, 18 / 255, 26 / 255},
 
-  worldSize = {2000,1000}
+  planetSize = {2000,1000},
+  physicsDebug = true,
 }
 
 return config

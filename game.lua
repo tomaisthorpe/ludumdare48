@@ -1,5 +1,6 @@
 local config = require("config")
-local World = require("world")
+local Planet = require("planet")
+local Player = require("player")
 
 local game = {
   translate = {0, 0},
@@ -16,7 +17,15 @@ function game:init()
 end
 
 function game:enter()
-  self.world = World()
+  self.planet = Planet()
+
+  -- Create the player
+  self.player = Player(self.planet.world, 100, 100)
+end
+
+function game:update(dt)
+  self.planet:update(dt)
+  self.player:update(dt)
 end
 
 function game:draw()
@@ -27,7 +36,8 @@ function game:draw()
   love.graphics.setColor(1, 1, 1)
 
   -- Draw game
-  love.graphics.draw(self.world.mapCanvas)
+  self.planet:draw()
+  self.player:draw()
   
   love.graphics.pop()
 
