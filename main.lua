@@ -13,7 +13,7 @@ function love.load()
 
 
   if config.skipSystem then
-    Gamestate.switch(Game, Planet())
+    Gamestate.switch(Game, Planet(1, 1))
   else
     Gamestate.switch(System)
   end

@@ -50,7 +50,8 @@ function System:generate()
   local xInterval = 800 / (config.planetsPerSystem + 1)
 
   for p = 1, config.planetsPerSystem do
-    local planet = Planet(p)
+    local difficulty = p / config.planetsPerSystem
+    local planet = Planet(p, difficulty)
     table.insert(self.planets, planet)
 
     table.insert(self.planetIcons, {

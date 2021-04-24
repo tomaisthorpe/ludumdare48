@@ -4,6 +4,7 @@ local gamestate = require "hump.gamestate"
 local config = require("config")
 local Planet = require("planet")
 local Player = require("player")
+local Enemy = require("enemy")
 
 local Game = {
   translate = {0, 0},
@@ -26,6 +27,18 @@ function Game:enter(prev, planet)
   self.camera:setBounds(0, 0, self.planet.size[1], self.planet.size[2])
 
   self.entities = {}
+  self.enemies = {}
+
+  -- Spawn all the enemies
+  for e = 1, #self.planet.enemyLocations do
+    local loc = self.planet.enemyLocations[e]
+    table.insert(self.enemies, Enemy(
+      self,
+      self.planet.world,
+      loc.x,
+      loc.y
+    ))
+  end
 end
 
 function Game:update(dt)
@@ -38,6 +51,14 @@ function Game:update(dt)
   for i, e in ipairs(self.entities) do
     if e.dead then
       table.remove(self.entities, i)
+    else
+      e:update(dt)
+    end
+  end
+
+  for i, e in ipairs(self.enemies) do
+    if e.dead then
+      table.remove(self.enemies, i)
     else
       e:update(dt)
     end
@@ -56,6 +77,13 @@ function Game:draw()
   -- Draw game
   self.planet:draw()
   self.player:draw()
+
+
+  for e = 1, #self.enemies do
+    if not self.enemies[e].dead then
+      self.enemies[e]:draw()
+    end
+  end
 
   for e = 1, #self.entities do
     if not self.entities[e].dead then
@@ -95,6 +123,17 @@ function Game:drawUI()
   love.graphics.setColor(1, 1, 0)
   love.graphics.rectangle("fill", px - 2, py - 2, 4, 4)
 
+  -- Draw enemies
+  for e=1, #self.enemies do
+    if not self.enemies[e].dead then
+      local x = self.enemies[e]:getX() * ms
+      local y = self.enemies[e]:getY() * ms
+
+      love.graphics.setColor(1, 0, 0)
+      love.graphics.rectangle("fill", x - 2, y - 2, 4, 4)
+    end
+  end
+
   -- Draw bullets?
   for e=1, #self.entities do
     if not self.entities[e].dead then
@@ -104,7 +143,7 @@ function Game:drawUI()
       love.graphics.setColor(1, 1, 1)
       love.graphics.rectangle("fill", x - 2, y - 2, 1, 1)
     end
-   end
+  end
 
   -- Border
   love.graphics.setColor(config.minimapBorderColor)

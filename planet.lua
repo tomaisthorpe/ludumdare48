@@ -4,8 +4,9 @@ local wf = require("windfield")
 local config = require("config")
 
 local Planet = Class{
-  init = function(self, p)
+  init = function(self, p, difficulty)
     self.p = p
+    self.difficulty = difficulty
 
     self.world = wf.newWorld(0, 0, true)
     self.world:addCollisionClass('Player')
@@ -19,6 +20,7 @@ local Planet = Class{
   size = {0,0},
   grid = {},
   minimapScale = 1,
+  enemyLocations = {},
 }
 
 function Planet:generate()
@@ -54,6 +56,17 @@ function Planet:generate()
 
   self:createCanvas()
   self:createMinimap()
+
+  -- Create some enemy spawns
+  for e = 1, 15 * self.difficulty do
+    local x = love.math.random(200, self.size[1] - 200)
+    local y = love.math.random(200, self.size[2] - 200)
+
+    table.insert(self.enemyLocations, {
+      x = x,
+      y = y,
+    })
+  end
 end
 
 function Planet:createCanvas()
