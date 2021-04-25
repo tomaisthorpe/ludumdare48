@@ -195,7 +195,7 @@ function Planet:drawMinimap()
 end
 
 function Planet:drawMini(current)
-  local alpha = 0.25
+  local alpha = 0.2
   if current then
     alpha = 1
   end

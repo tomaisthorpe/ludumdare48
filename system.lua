@@ -16,9 +16,28 @@ local System = {
 function System:init()
   self:calculateScaling()
   self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
+  self.stars = love.graphics.newCanvas(800, 600)
+
+  love.graphics.setCanvas(self.stars)
+  love.graphics.setColor(12 / 255, 20 / 255, 26 / 255)
+  love.graphics.rectangle("fill", 0, 0, 800, 600)
+
+
+  for s = 1, 100 do
+    local x = love.math.random(800)
+    local y = love.math.random(600)
+    local alpha = love.math.random() / 2
+
+    love.graphics.setColor(1, 252 / 255, 168 / 255, alpha)
+    love.graphics.points(x, y)
+  end
+
+  love.graphics.setCanvas()
 end
 
 function System:enter()
+  -- Create starfield
+
   self:generate()
 end
 
@@ -51,6 +70,13 @@ function System:draw()
   love.graphics.push()
   love.graphics.translate(System.translate[1], System.translate[2])
   love.graphics.scale(System.scaling)
+
+
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.draw(self.stars)
+
+  love.graphics.setColor(1, 212 / 255, 71 / 255)
+  love.graphics.circle("fill", -550, 300, 600)
 
   love.graphics.setColor(1, 1, 1)
 
