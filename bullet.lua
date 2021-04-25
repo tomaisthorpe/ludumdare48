@@ -46,8 +46,14 @@ function Bullet:destroy()
 end
 
 function Bullet:draw()
-  love.graphics.setColor(0, 0, 0)
-  love.graphics.circle('fill', self.object:getX(), self.object:getY(), 3)
+  love.graphics.push()
+
+  love.graphics.setColor(0.8, 0, 0)
+  love.graphics.translate(self.object:getX(), self.object:getY())
+  love.graphics.rotate(self.object:getAngle())
+  love.graphics.rectangle('fill', -4, -2, 8, 4)
+
+  love.graphics.pop()
 end
 
 return Bullet

@@ -88,6 +88,12 @@ function Game:draw()
   -- Draw game
   self.planet:draw()
   self.player:draw()
+ 
+  for e = 1, #self.entities do
+    if not self.entities[e].dead then
+      self.entities[e]:draw()
+    end
+  end
 
 
   for e = 1, #self.enemies do
@@ -96,12 +102,6 @@ function Game:draw()
     end
   end
 
-  for e = 1, #self.entities do
-    if not self.entities[e].dead then
-      self.entities[e]:draw()
-    end
-  end
-  
   self.camera:detach()
 
   self:drawUI()
