@@ -54,6 +54,7 @@ function System:resume(prev, status)
       -- GAME COMPLETE!
       self.canRestart = true
       self.isGameComplete = true
+      self.nextPlanet = self.nextPlanet + 1
     else
       self.nextPlanet = self.nextPlanet + 1
     end
