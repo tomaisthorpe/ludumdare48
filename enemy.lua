@@ -6,11 +6,13 @@ local Enemy = Class {
     self.game = game
     self.world = world
 
-    self.object = world:newRectangleCollider(x - 10, y - 10, 20, 20)
+    self.object = world:newRectangleCollider(x - 12, y - 12, 24, 24)
     self.object:setCollisionClass('Enemy')
     self.object:setObject(self)
     self.object:setFixedRotation(true)
     self.object:setLinearDamping(5)
+
+    self.image = love.graphics.newImage("assets/enemy.png")
   end,
   speed = 5001,
   health = 100,
@@ -84,13 +86,14 @@ function Enemy:draw()
 
   love.graphics.push()
 
-  love.graphics.setColor(1, 0, 0)
+  love.graphics.setColor(1, 1, 1)
   
   -- Translate as we need to draw at 0,0 for rotation
   love.graphics.translate(self:getX(), self:getY())
-  love.graphics.rotate(self.object:getAngle())
+  love.graphics.rotate(self.object:getAngle() + math.pi / 2)
+  love.graphics.translate(-12, -12)
 
-  love.graphics.polygon("fill", -10, -10, 10, 0, -10, 10)
+  love.graphics.draw(self.image)
 
   love.graphics.pop()
 end

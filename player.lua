@@ -7,12 +7,14 @@ local Player = Class {
     self.game = game
     self.world = world
 
-    self.object = world:newRectangleCollider(x - 10, y - 10, 20, 20)
+    self.object = world:newRectangleCollider(x - 16, y - 16, 32, 32)
     self.object:setCollisionClass('Player')
     self.object:setObject(self)
     self.object:setFixedRotation(true)
     self.object:setLinearDamping(5)
     self.health = 100
+
+    self.image = love.graphics.newImage("assets/player.png")
   end,
   speed = 5001,
 
@@ -90,13 +92,14 @@ end
 function Player:draw()
   love.graphics.push()
 
-  love.graphics.setColor(1, 0, 1)
+  love.graphics.setColor(1, 1, 1)
   
   -- Translate as we need to draw at 0,0 for rotation
   love.graphics.translate(self:getX(), self:getY())
-  love.graphics.rotate(self.object:getAngle())
+  love.graphics.rotate(self.object:getAngle() + math.pi / 2)
+  love.graphics.translate(-16, -16)
 
-  love.graphics.polygon("fill", -10, -10, 10, 0, -10, 10)
+  love.graphics.draw(self.image)
 
   love.graphics.pop()
 end

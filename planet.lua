@@ -23,22 +23,38 @@ local Planet = Class{
   end
 }
 
+function Planet:applyNoise(seed, freq, weight)
+  freq = 0.015
+  for x = 1, self.size[1] / 4 do
+    for y = 1, self.size[2] / 4 do
+      self.grid[x][y] = self.grid[x][y] + love.math.noise( freq * x, freq * y,seed, 5 + seed) * weight
+    end
+  end
+end
+
+
 function Planet:generate()
   -- Calculate planet size
   -- TODO randomize planet size
   self.size = config.planetSize
 
-  local seed = love.math.random()
+  local seed = love.math.random() * 15
+  seed = seed + love.math.random()
 
   -- Generate the heightmap
   -- TODO many frequency
-  local freq = 0.008
   for x = 1, self.size[1] / 4 do
     for y = 1, self.size[2] / 4 do
       self.grid[x] = self.grid[x] or {}
-      self.grid[x][y] = love.math.noise( freq * x, freq * y,seed)
+      self.grid[x][y] = 0
     end
   end
+
+  self:applyNoise(seed, 0.008, 0.5)
+  self:applyNoise(seed, 0.02, 0.2)
+  self:applyNoise(seed, 0.05, 0.3)
+
+  self.seaLevel = love.math.random(3, 7) / 10
 
   -- Add bounding box
   local b1 = self.world:newRectangleCollider(0, 0, 50, self.size[2])
@@ -84,16 +100,31 @@ function Planet:createCanvas()
     hue = 256
   end
 
+  
   for x = 1, #self.grid do
     for y = 1, #self.grid[x] do
-      local min = 0
-      local max = 100
+      local v = self.grid[x][y]
 
-      local l = min + (max - min) * self.grid[x][y]
+      local color = {0, 0, 0}
 
+      if v > self.seaLevel + 0.05 then
+        local min = 0
+        local max = 70
+        local l = min + (max - min) * self.grid[x][y]
+        color = HSL(hue, 26, l, 1)
+      elseif v > self.seaLevel then
+        local min = 80
+        local max = 85
+        local l = min + (max - min) * self.grid[x][y]
+        color = HSL(hue - 40, 77, l, 1)
+      else
+        local min = 80
+        local max = 85
+        local l = min + (max - min) * self.grid[x][y]
+        color = HSL(200, 77, l, 1)
+      end
 
-
-      love.graphics.setColor(HSL(hue, 26, l, 1))
+      love.graphics.setColor(color)
       love.graphics.rectangle("fill", x, y, 1, 1)
     end
   end
@@ -173,7 +204,7 @@ end
 
 -- Converts HSL to RGB
 function HSL(h, s, l, a)
-	if s<=0 then return l,l,l,a end
+	if s<=0 then return {l,l,l,a} end
 	h, s, l = h/360*6, s/100, l/100
 	local c = (1-math.abs(2*l-1))*s
 	local x = (1-math.abs(h%2-1))*c
@@ -184,7 +215,7 @@ function HSL(h, s, l, a)
 	elseif h < 4 then r,g,b = 0,x,c
 	elseif h < 5 then r,g,b = x,0,c
 	else              r,g,b = c,0,x
-	end return (r+m),(g+m),(b+m),a
+	end return {(r+m),(g+m),(b+m),a}
 end
 
 return Planet
