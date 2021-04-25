@@ -119,6 +119,7 @@ function System:drawUI()
   love.graphics.setColor(1, 1, 1)
 
   love.graphics.printf("Lives remaining:" .. self.lives, 10, 500, 800, "center")
+  love.graphics.printf("ESC to quit", 16, 568, 800, "center")
 
   love.graphics.printf("The system has been taken over! Clear each planet to complete the game.", 10, 120, 800, "center")
   love.graphics.printf("You need to clear one planet at a time. Click on the highlighted planet to start.", 10, 150, 800, "center")
@@ -129,6 +130,7 @@ function System:drawUI()
 
   love.graphics.setColor(config.titleColor)
   love.graphics.printf("Clear the system!", 0, 32, 800, "center")
+
 end
 
 function System:generate()

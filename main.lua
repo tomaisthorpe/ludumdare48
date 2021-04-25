@@ -12,7 +12,7 @@ function love.load()
   love.window.setFullscreen(config.fullscreen)
 
   if config.skipSystem then
-  Gamestate.switch(Game, Planet(1, 0.25))
+  Gamestate.switch(Game, Planet(0.25, config.planetTypes[1]))
   else
     Gamestate.switch(System)
   end

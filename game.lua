@@ -161,6 +161,16 @@ function Game:drawUI()
   love.graphics.setColor(1, 1, 1)
   love.graphics.printf("Enemies remaining: " .. #self.enemies, 16, 16, 200)
 
+  love.graphics.setColor(0.3, 0.3, 0.3)
+  love.graphics.printf("WASD / Arrow keys to move", 16, 523, 800)
+  love.graphics.printf("Click to shoot", 16, 545, 800)
+  love.graphics.printf("ESC to quit", 16, 569, 800)
+
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.printf("WASD / Arrow keys to move", 16, 522, 800)
+  love.graphics.printf("Click to shoot", 16, 544, 800)
+  love.graphics.printf("ESC to quit", 16, 568, 800)
+
 end
 
 function Game:drawMinimap()

@@ -10,8 +10,9 @@ local Bullet =  Class{
 
     self.targetClass = targetClass
     self.object:setCollisionClass('Bullet')
+    self.dead = false
+    self.lifetime = 1
   end,
-  dead = false,
   damage = 100
 }
 
@@ -26,6 +27,12 @@ end
 function Bullet:update(dt)
   if self.object:enter('Solid') then
     self:destroy()
+  end
+
+  self.lifetime = self.lifetime - dt
+  if self.lifetime <= 0 then
+    self:destroy()
+    return
   end
 
   if self.object:enter(self.targetClass) then

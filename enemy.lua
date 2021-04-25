@@ -16,7 +16,7 @@ local Enemy = Class {
     self.image = love.graphics.newImage("assets/enemy.png")
     self.health = 100
   end,
-  speed = 5001,
+  speed = 1000,
 
   dead = false,
   fireRate = 1,
@@ -31,7 +31,7 @@ function Enemy:getY()
 end
 
 function Enemy:damage(dmg)
-  self.health = self.health - 0.1 * dmg
+  self.health = self.health - 0.3 * dmg
 
   if self.health <= 0 then
     self.dead = true
@@ -53,10 +53,12 @@ function Enemy:update(dt)
   local dy = py - self:getY()
 
   local d = math.sqrt(dx * dx + dy * dy)
-  if d < 300 then
+  if d < 400 then
     local theta = math.atan2(dy, dx)
 
     self.object:setAngle(theta)
+
+    self.object:applyForce(math.cos(theta) * self.speed, math.sin(theta) * self.speed)
 
     self:shoot()
   end

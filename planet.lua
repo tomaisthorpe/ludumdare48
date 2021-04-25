@@ -11,7 +11,7 @@ local Planet = Class{
     self.difficulty = difficulty
 
     self.world = wf.newWorld(0, 0, true)
-    self.world:addCollisionClass('Bullet')
+    self.world:addCollisionClass('Bullet', {ignores={'Bullet'}})
     self.world:addCollisionClass('Enemy', {ignores={'Bullet'}})
     self.world:addCollisionClass('Player', {ignores={'Bullet'}})
     self.world:addCollisionClass('Solid')
@@ -78,7 +78,7 @@ function Planet:generate()
   self:createMinimap()
 
   -- Create some enemy spawns
-  for e = 1, 5 * self.difficulty do
+  for e = 1, 20 * self.difficulty do
     local x = love.math.random(200, self.size[1] - 200)
     local y = love.math.random(200, self.size[2] - 200)
 
