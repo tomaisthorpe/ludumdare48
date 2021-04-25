@@ -35,6 +35,7 @@ function Enemy:damage(dmg)
 
   if self.health <= 0 then
     self.dead = true
+    self.object:destroy()
     self.health = 0
     self.game:enemyKilled()
     self.game:playSound('death')
