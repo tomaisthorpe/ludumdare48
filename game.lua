@@ -26,9 +26,8 @@ function Game:init()
 end
 
 function Game:playSound(name)
-self.sounds[name]:play()
+  self.sounds[name]:play()
 end
-
 
 function Game:enter(prev, planet)
   self.planet = planet
@@ -56,6 +55,18 @@ function Game:enter(prev, planet)
       loc.y
     ))
   end
+end
+
+function Game:leave()
+  for e = 1, #self.enemies do
+    self.enemies[e]:destroy()
+  end
+
+  for e = 1, #self.entities do
+    self.entities[e]:destroy()
+  end
+
+  self.player:destroy()
 end
 
 function Game:update(dt)

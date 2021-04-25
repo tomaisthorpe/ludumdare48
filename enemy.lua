@@ -34,14 +34,20 @@ function Enemy:damage(dmg)
   self.health = self.health - 0.3 * dmg
 
   if self.health <= 0 then
-    self.dead = true
-    self.object:destroy()
+    self:destroy()
     self.health = 0
     self.game:enemyKilled()
     self.game:playSound('death')
   else
     self.game:playSound('hit')
   end
+end
+
+function Enemy:destroy()
+    if self.dead == false and self.object then
+      self.object:destroy()
+      self.dead = true
+    end
 end
 
 function Enemy:update(dt)

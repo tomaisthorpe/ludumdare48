@@ -49,7 +49,7 @@ function Bullet:update(dt)
 end
 
 function Bullet:destroy()
-  if self.object then
+  if self.dead == false and self.object then
     self.object:destroy()
     self.dead = true
   end

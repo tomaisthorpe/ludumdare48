@@ -60,6 +60,9 @@ function Player:update(dt)
   self.object:setAngle(theta)
 end
 
+function Player:destroy()
+  self.object:destroy()
+end
 
 function Player:damage(dmg)
   self.health = self.health - dmg * 0.05
