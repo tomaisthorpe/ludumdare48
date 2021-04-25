@@ -265,9 +265,6 @@ function Game:keypressed(key)
   if key == "escape" then 
     love.event.quit()
   end
-  if key == "q" then
-  gamestate.pop()
-  end
 end
 
 return Game

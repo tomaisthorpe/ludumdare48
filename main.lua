@@ -14,7 +14,7 @@ function love.load()
   if config.skipSystem then
   Gamestate.switch(Game, Planet(0.25, config.planetTypes[1]))
   else
-    Gamestate.switch(System)
+    Gamestate.switch(System())
   end
 
   love.window.setTitle("Ludum Dare 48")

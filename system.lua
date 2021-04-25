@@ -1,41 +1,45 @@
 local Gamestate = require("hump.gamestate")
+local Class = require("hump.class")
 
 local config = require("config")
 local Game = require("game")
 local Planet = require("planet")
 
-local System = {
+local System = Class{
+  init = function(self)
+    self.planets = {}
+    self.planetIcons = {}
+    self.nextPlanet = 1
+    self.lives = 3
+    self.canRestart = false
+    self.isGameOver = false
+    self.isGameComplete = false
+
+    self:calculateScaling()
+    self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
+    self.fontLarge = love.graphics.newFont("assets/sharetech.ttf", 32)
+
+    self.stars = love.graphics.newCanvas(800, 600)
+
+    love.graphics.setCanvas(self.stars)
+    love.graphics.setColor(12 / 255, 20 / 255, 26 / 255)
+    love.graphics.rectangle("fill", 0, 0, 800, 600)
+
+
+    for s = 1, 100 do
+      local x = love.math.random(800)
+      local y = love.math.random(600)
+      local alpha = love.math.random() / 2
+
+      love.graphics.setColor(1, 252 / 255, 168 / 255, alpha)
+      love.graphics.points(x, y)
+    end
+
+    love.graphics.setCanvas()
+  end,
   translate = {0, 0},
   scaling = 1,
-  planets = {},
-  planetIcons = {},
-  nextPlanet = 1,
-  lives = 3,
 }
-
-function System:init()
-  self:calculateScaling()
-  self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
-  self.fontLarge = love.graphics.newFont("assets/sharetech.ttf", 32)
-
-  self.stars = love.graphics.newCanvas(800, 600)
-
-  love.graphics.setCanvas(self.stars)
-  love.graphics.setColor(12 / 255, 20 / 255, 26 / 255)
-  love.graphics.rectangle("fill", 0, 0, 800, 600)
-
-
-  for s = 1, 100 do
-    local x = love.math.random(800)
-    local y = love.math.random(600)
-    local alpha = love.math.random() / 2
-
-    love.graphics.setColor(1, 252 / 255, 168 / 255, alpha)
-    love.graphics.points(x, y)
-  end
-
-  love.graphics.setCanvas()
-end
 
 function System:enter()
   -- Create starfield
@@ -48,11 +52,10 @@ function System:resume(prev, status)
   if status == "complete" then
     if self.nextPlanet == #self.planets then
       -- GAME COMPLETE!
-      love.window.showMessageBox("Game complete!", "You've cleared the solar system!")
-      love.event.quit()
+      self.canRestart = true
+      self.isGameComplete = true
     else
       self.nextPlanet = self.nextPlanet + 1
-      love.window.showMessageBox("Planet cleared!", "All enemies have been killed. Clear the next planet.")
     end
   end
 
@@ -60,8 +63,8 @@ function System:resume(prev, status)
 
     self.lives = self.lives - 1
     if self.lives == 0 then
-      love.window.showMessageBox("Game over!", "You lost all your lives. Start the game again to try at a new solar system")
-      love.event.quit()
+      self.canRestart = true
+      self.isGameOver = true
     else
       love.window.showMessageBox("You were killed.", "Try again. You have ".. self.lives .. " more lives.")
     end
@@ -69,6 +72,8 @@ function System:resume(prev, status)
 end
 
 function System:draw()
+
+  print(#self.planets)
   love.graphics.push()
   love.graphics.translate(System.translate[1], System.translate[2])
   love.graphics.scale(System.scaling)
@@ -118,7 +123,9 @@ function System:drawUI()
   love.graphics.setFont(self.font)
   love.graphics.setColor(1, 1, 1)
 
-  love.graphics.printf("Lives remaining:" .. self.lives, 10, 500, 800, "center")
+  if not self.canRestart then
+    love.graphics.printf("Lives remaining:" .. self.lives, 10, 500, 800, "center")
+  end
   love.graphics.printf("ESC to quit", 16, 568, 800, "center")
 
   love.graphics.printf("The system has been taken over! Clear each planet to complete the game.", 10, 120, 800, "center")
@@ -130,6 +137,35 @@ function System:drawUI()
 
   love.graphics.setColor(config.titleColor)
   love.graphics.printf("Clear the system!", 0, 32, 800, "center")
+
+
+  if self.isGameComplete then
+    love.graphics.setFont(self.fontLarge)
+    love.graphics.setColor(config.titleShadowColor)
+    love.graphics.printf("System cleared!", 0, 380, 800, "center")
+
+    love.graphics.setColor(config.titleColor)
+    love.graphics.printf("System cleared!", 0, 378, 800, "center")
+
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setFont(self.font)
+    love.graphics.printf("You've cleared the system! Thanks for playing!", 10, 420, 800, "center")
+    love.graphics.printf("Press space to play again in a newly generated system.", 10, 442, 800, "center")
+  end
+
+  if self.isGameOver then
+    love.graphics.setFont(self.fontLarge)
+    love.graphics.setColor(config.titleShadowColor)
+    love.graphics.printf("Game over!", 0, 380, 800, "center")
+
+    love.graphics.setColor(config.titleColor)
+    love.graphics.printf("Game over!", 0, 378, 800, "center")
+
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setFont(self.font)
+    love.graphics.printf("You lost all your lives.", 10, 420, 800, "center")
+    love.graphics.printf("Press space to play again in a newly generated system.", 10, 442, 800, "center")
+  end
 
 end
 
@@ -169,6 +205,10 @@ function System:keypressed(key)
   if key == "escape" then 
     love.event.quit()
   end
+
+  if self.canRestart and key == "space" then
+    Gamestate.switch(System())
+  end
 end
 
 function System:mousereleased(x, y, button)
@@ -186,7 +226,7 @@ function System:mousereleased(x, y, button)
 
     -- User must have clicked on the planet!
     if d <= config.miniPlanetRadius[self.planets[p].sizeName] then
-      if self.nextPlanet == p then
+      if self.nextPlanet == p and self.canRestart == false then
         Gamestate.push(Game, self.planets[p])
       end
     end
