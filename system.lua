@@ -27,8 +27,8 @@ function System:resume(prev, status)
   if status == "complete" then
     if self.nextPlanet == #self.planets then
       -- GAME COMPLETE!
-      love.event.quit()
       love.window.showMessageBox("Game complete!", "You've cleared the solar system!")
+      love.event.quit()
     else
       self.nextPlanet = self.nextPlanet + 1
       love.window.showMessageBox("Planet cleared!", "All enemies have been killed. Clear the next planet.")
@@ -129,7 +129,7 @@ function System:mousereleased(x, y, button)
     local d = math.sqrt(dx * dx + dy * dy)
 
     -- User must have clicked on the planet!
-    if d <= config.miniPlanetRadius then
+    if d <= config.miniPlanetRadius[self.planets[p].sizeName] then
       if self.nextPlanet == p then
         Gamestate.push(Game, self.planets[p])
       end

@@ -24,21 +24,24 @@ local Planet = Class{
 }
 
 function Planet:applyNoise(seed, freq, weight)
-  freq = 0.015
   for x = 1, self.size[1] / 4 do
     for y = 1, self.size[2] / 4 do
-      self.grid[x][y] = self.grid[x][y] + love.math.noise( freq * x, freq * y,seed, 5 + seed) * weight
+      self.grid[x][y] = self.grid[x][y] + love.math.noise( freq * x + seed, freq * y + seed) * weight
     end
   end
 end
 
 
 function Planet:generate()
+  -- Choose the type of planet
+  self.type = config.planetTypes[love.math.random(1, #config.planetTypes)]
+
   -- Calculate planet size
   -- TODO randomize planet size
-  self.size = config.planetSize
+  self.sizeName = self.type.sizes[love.math.random(1, #self.type.sizes)]
+  self.size = config.planetSizes[self.sizeName]
 
-  local seed = love.math.random() * 15
+  local seed = love.math.random() * 100
   seed = seed + love.math.random()
 
   -- Generate the heightmap
@@ -50,9 +53,9 @@ function Planet:generate()
     end
   end
 
-  self:applyNoise(seed, 0.008, 0.5)
-  self:applyNoise(seed, 0.02, 0.2)
-  self:applyNoise(seed, 0.05, 0.3)
+  for _, f in pairs(self.type.frequencies) do
+    self:applyNoise(seed, f[1], f[2])
+  end
 
   self.seaLevel = love.math.random(3, 7) / 10
 
@@ -100,6 +103,19 @@ function Planet:getHeightAt(x, y)
   return self.grid[x][y]
 end
 
+function Planet:pickColor(colorLimits, color, value) 
+  local min = color[3][1]
+  local max = color[3][2]
+  local vMin = colorLimits[1]
+  local vMax = colorLimits[2]
+
+
+  local scaledV = (value - vMin) * 1 / (vMax - vMin);
+  local l =  min + (max - min) * scaledV
+
+  return HSL(color[1], color[2], l)
+end
+
 function Planet:createCanvas()
   self.mapCanvas = love.graphics.newCanvas(self.size[1], self.size[2])
   love.graphics.setCanvas(self.mapCanvas)
@@ -108,35 +124,23 @@ function Planet:createCanvas()
 
   love.graphics.scale(4, 4)
 
-  local hue = 126
-  if self.p == 2 then
-    hue = 9
-  elseif self.p == 3 then
-    hue = 256
-  end
-
-  
   for x = 1, #self.grid do
     for y = 1, #self.grid[x] do
       local v = self.grid[x][y]
 
       local color = {0, 0, 0}
+      local vMax = 1.0
 
-      if v > self.seaLevel + 0.05 then
-        local min = 0
-        local max = 70
-        local l = min + (max - min) * self.grid[x][y]
-        color = HSL(hue, 26, l, 1)
-      elseif v > self.seaLevel then
-        local min = 80
-        local max = 85
-        local l = min + (max - min) * self.grid[x][y]
-        color = HSL(hue - 40, 77, l, 1)
-      else
-        local min = 80
-        local max = 85
-        local l = min + (max - min) * self.grid[x][y]
-        color = HSL(200, 77, l, 1)
+      for _, p in pairs(self.type.palette) do
+        if v > p[1] then
+          color = self:pickColor(
+            {p[1], vMax},
+            p[2],
+            v
+          )
+          break
+        end
+      vMax = p[1]
       end
 
       love.graphics.setColor(color)
@@ -198,12 +202,12 @@ function Planet:drawMini(current)
   end
 
   love.graphics.setColor(1, 1, 1, alpha)
-  love.graphics.stencil(sphereStencil, "replace", 1)
+  love.graphics.stencil(self:sphereStencil(), "replace", 1)
   love.graphics.setStencilTest("greater", 0)
 
   love.graphics.push()
-  love.graphics.translate(-config.miniPlanetRadius, -config.miniPlanetRadius)
-  local scale = config.miniPlanetRadius * 2 / self.size[2]
+  love.graphics.translate(-config.miniPlanetRadius[self.sizeName], -config.miniPlanetRadius[self.sizeName])
+  local scale = config.miniPlanetRadius[self.sizeName] * 2 / self.size[2]
   love.graphics.scale(scale, scale)
 
   love.graphics.draw(self.mapCanvas)
@@ -213,8 +217,12 @@ function Planet:drawMini(current)
   love.graphics.setStencilTest()
 end
 
-function sphereStencil()
-  love.graphics.circle("fill", 0, 0, 60)
+function Planet:sphereStencil()
+  local size = config.miniPlanetRadius[self.sizeName]
+  return function() 
+    love.graphics.circle("fill", 0, 0, size)
+
+  end
 end
 
 -- Converts HSL to RGB
