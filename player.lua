@@ -63,6 +63,7 @@ end
 
 function Player:damage(dmg)
   self.health = self.health - dmg * 0.5
+  self.game.camera:shake(2, 0.25)
 
   if self.health <= 0 then
     self.dead = true
