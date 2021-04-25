@@ -158,9 +158,19 @@ function Game:drawMinimap()
     end
   end
 
+  -- Camera box
+  local c = self.camera
+  local x = c.x - c.w / 2
+  local y = c.y- c.h / 2
+  love.graphics.setColor(1, 1, 1, 0.04)
+  love.graphics.rectangle("fill", x * ms, y * ms, c.w * ms, c.h * ms)
+  love.graphics.setColor(1, 1, 1, 0.1)
+  love.graphics.rectangle("line", x * ms, y * ms, c.w * ms, c.h * ms)
+  
+
   -- Border
   love.graphics.setColor(config.minimapBorderColor)
-  love.graphics.rectangle("line", -1, -1, config.minimapSize[1], config.minimapSize[2])
+  love.graphics.rectangle("line", 0, 0, config.minimapSize[1], config.minimapSize[2])
 
   love.graphics.pop()
 end
