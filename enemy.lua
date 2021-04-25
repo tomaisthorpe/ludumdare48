@@ -37,6 +37,9 @@ function Enemy:damage(dmg)
     self.dead = true
     self.health = 0
     self.game:enemyKilled()
+    self.game:playSound('death')
+  else
+    self.game:playSound('hit')
   end
 end
 
@@ -77,6 +80,7 @@ function Enemy:shoot()
 
   local bullet = Bullet(self.game, self.world, self:getX(), self:getY(), theta, 'Player')
   self.game:addEntity(bullet)
+  self.game:playSound('shoot')
 end
 
 function Enemy:draw()

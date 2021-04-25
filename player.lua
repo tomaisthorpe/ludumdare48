@@ -68,7 +68,10 @@ function Player:damage(dmg)
   if self.health <= 0 then
     self.dead = true
     self.health = 0
+    self.game:playSound('death')
     self.game:gameOver()
+  else
+    self.game:playSound('hit')
   end
 end
 
@@ -88,6 +91,7 @@ function Player:shoot()
 
   local bullet = Bullet(self.game, self.world, self:getX(), self:getY(), theta, 'Enemy')
   self.game:addEntity(bullet)
+  self.game:playSound('shoot')
 end
 
 function Player:drawShadow(planet)

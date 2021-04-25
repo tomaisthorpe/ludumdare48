@@ -16,6 +16,8 @@ local System = {
 function System:init()
   self:calculateScaling()
   self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
+  self.fontLarge = love.graphics.newFont("assets/sharetech.ttf", 32)
+
   self.stars = love.graphics.newCanvas(800, 600)
 
   love.graphics.setCanvas(self.stars)
@@ -87,6 +89,15 @@ function System:draw()
 
     self.planets[p]:drawMini(self.nextPlanet == p)
 
+    if self.nextPlanet > p then
+      love.graphics.push()
+      love.graphics.setFont(self.font)
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.rotate(-0.1)
+      love.graphics.printf("Cleared!", -60, -8, 120, "center")
+      love.graphics.pop()
+    end
+
     love.graphics.pop()
   end
 
@@ -107,9 +118,18 @@ function System:drawUI()
   love.graphics.setFont(self.font)
   love.graphics.setColor(1, 1, 1)
 
-  love.graphics.printf("Lives:" .. self.lives, 10, 10, 800, "center")
-end
+  love.graphics.printf("Lives remaining:" .. self.lives, 10, 500, 800, "center")
 
+  love.graphics.printf("The system has been taken over! Clear each planet to complete the game.", 10, 120, 800, "center")
+  love.graphics.printf("You need to clear one planet at a time. Click on the highlighted planet to start.", 10, 150, 800, "center")
+
+  love.graphics.setFont(self.fontLarge)
+  love.graphics.setColor(config.titleShadowColor)
+  love.graphics.printf("Clear the system!", 0, 34, 800, "center")
+
+  love.graphics.setColor(config.titleColor)
+  love.graphics.printf("Clear the system!", 0, 32, 800, "center")
+end
 
 function System:generate()
   local xInterval = 800 / (config.planetsPerSystem + 1)

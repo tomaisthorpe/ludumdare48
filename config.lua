@@ -3,6 +3,10 @@ local config = {
   fullscreen = true,
   borderColor = {9 / 255, 18 / 255, 26 / 255},
 
+  titleColor = {36 / 255, 175 / 255, 255 / 255},
+  titleShadowColor = {28 / 255, 107 / 255, 153 / 255},
+
+
   healthColor = {177 / 255, 7 / 255, 7 / 255},
   healthBorderColor = {140 / 255, 7 / 255, 7 / 255},
   healthBorderWidth = 2,

@@ -21,6 +21,8 @@ local Planet = Class{
     self.minimapScale = 1
     self.enemyLocations = {}
 
+    self.shadow = love.graphics.newImage("assets/shadow.png") 
+
     self:generate()
   end
 }
@@ -214,13 +216,27 @@ function Planet:drawMini(current)
   love.graphics.pop()
 
   love.graphics.setStencilTest()
+
+  love.graphics.stencil(self:sphereStencil(), "replace", 1)
+  love.graphics.setStencilTest("greater", 0)
+  love.graphics.push()
+  love.graphics.translate(-config.miniPlanetRadius[self.sizeName], -config.miniPlanetRadius[self.sizeName])
+  local scale = config.miniPlanetRadius[self.sizeName] * 2 / 200
+  love.graphics.scale(scale, scale)
+
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.draw(self.shadow)
+
+  love.graphics.pop()
+  love.graphics.setStencilTest()
+
+
 end
 
 function Planet:sphereStencil()
   local size = config.miniPlanetRadius[self.sizeName]
   return function() 
     love.graphics.circle("fill", 0, 0, size)
-
   end
 end
 

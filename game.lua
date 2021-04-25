@@ -16,7 +16,17 @@ function Game:init()
   Game:calculateScaling()
 
   self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
+  self.sounds = {
+    shoot = love.audio.newSource('assets/shoot.wav', 'static'),
+    hit = love.audio.newSource('assets/hit.wav', 'static'),
+    death = love.audio.newSource('assets/death.wav', 'static'),
+  }
 end
+
+function Game:playSound(name)
+self.sounds[name]:play()
+end
+
 
 function Game:enter(prev, planet)
   self.planet = planet
