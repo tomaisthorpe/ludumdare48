@@ -27,6 +27,7 @@ end
 function Bullet:update(dt)
   if self.object:enter('Solid') then
     self:destroy()
+    return
   end
 
   self.lifetime = self.lifetime - dt
@@ -48,8 +49,10 @@ function Bullet:update(dt)
 end
 
 function Bullet:destroy()
-  self.object:destroy()
-  self.dead = true
+  if self.object then
+    self.object:destroy()
+    self.dead = true
+  end
 end
 
 function Bullet:draw()
