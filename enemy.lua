@@ -1,5 +1,6 @@
 local Class = require("hump.class")
 local Bullet = require('bullet')
+local config = require("config")
 
 local Enemy = Class {
   init = function(self, game, world, x, y)
@@ -13,9 +14,9 @@ local Enemy = Class {
     self.object:setLinearDamping(5)
 
     self.image = love.graphics.newImage("assets/enemy.png")
+    self.health = 100
   end,
   speed = 5001,
-  health = 100,
 
   dead = false,
   fireRate = 1,
@@ -30,7 +31,7 @@ function Enemy:getY()
 end
 
 function Enemy:damage(dmg)
-  self.health = self.health - dmg
+  self.health = self.health - 0.1 * dmg
 
   if self.health <= 0 then
     self.dead = true
@@ -95,6 +96,12 @@ function Enemy:draw()
   love.graphics.draw(self.image)
 
   love.graphics.pop()
+  -- Draw health bar
+  if self.health < 100 then
+    love.graphics.setColor(config.healthColor)
+    local width = (self.health / 100) * 16
+    love.graphics.rectangle("fill", self.object:getX() - (width / 2), self.object:getY() - 11, width, 2)
+  end
 end
 
 

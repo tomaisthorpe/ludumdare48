@@ -4,8 +4,10 @@ local wf = require("windfield")
 local config = require("config")
 
 local Planet = Class{
-  init = function(self, p, difficulty)
-    self.p = p
+  init = function(self, difficulty, type)
+  -- Choose the type of planet
+    self.type = type
+
     self.difficulty = difficulty
 
     self.world = wf.newWorld(0, 0, true)
@@ -33,9 +35,6 @@ end
 
 
 function Planet:generate()
-  -- Choose the type of planet
-  self.type = config.planetTypes[love.math.random(1, #config.planetTypes)]
-
   -- Calculate planet size
   -- TODO randomize planet size
   self.sizeName = self.type.sizes[love.math.random(1, #self.type.sizes)]

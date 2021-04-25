@@ -84,18 +84,26 @@ function System:drawUI()
   love.graphics.printf("Lives:" .. self.lives, 10, 10, 800, "center")
 end
 
+
 function System:generate()
   local xInterval = 800 / (config.planetsPerSystem + 1)
 
-  for p = 1, config.planetsPerSystem do
-    local difficulty = p / config.planetsPerSystem
-    local planet = Planet(p, difficulty)
+  -- Shuffle the planet types
+  local types = config.planetTypes
+  shuffle(types)
+  local count = 1
+
+  for _, type in pairs(types) do
+    local difficulty = count / config.planetsPerSystem
+    local planet = Planet(difficulty, type)
     table.insert(self.planets, planet)
 
     table.insert(self.planetIcons, {
-      x = p * xInterval,
+      x = count * xInterval,
       y = 300,
     })
+
+    count = count + 1
   end
 end
 
@@ -146,4 +154,18 @@ function System:getMousePosition()
   return mx, my
 end
 
+function swap(array, index1, index2)
+    array[index1], array[index2] = array[index2], array[index1]
+end
+
+function shuffle(array)
+    local counter = #array
+    while counter > 1 do
+        local index = love.math.random(counter)
+        swap(array, index, counter)
+        counter = counter - 1
+    end
+  end
+
 return System
+

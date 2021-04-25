@@ -3,6 +3,12 @@ local config = {
   fullscreen = true,
   borderColor = {9 / 255, 18 / 255, 26 / 255},
 
+  healthColor = {177 / 255, 7 / 255, 7 / 255},
+  healthBorderColor = {140 / 255, 7 / 255, 7 / 255},
+  healthBorderWidth = 2,
+  healthWidth = 250,
+  healthHeight = 20,
+
   miniPlanetRadius = {
     small = 45,
     medium = 55,

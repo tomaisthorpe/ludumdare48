@@ -14,6 +14,8 @@ local Game = {
 function Game:init()
   -- Window setup
   Game:calculateScaling()
+
+  self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
 end
 
 function Game:enter(prev, planet)
@@ -125,6 +127,30 @@ end
 
 function Game:drawUI()
   self:drawMinimap()
+
+  -- Health bar
+  love.graphics.push()
+  love.graphics.translate(800 - config.healthWidth - 16, 16)
+  love.graphics.setColor(config.healthBorderColor)
+  love.graphics.setLineWidth(config.healthBorderWidth)
+  love.graphics.rectangle("line", 0, 0, config.healthWidth, config.healthHeight)
+
+  love.graphics.setColor(config.healthColor)
+  love.graphics.rectangle("fill", config.healthBorderWidth * 2, config.healthBorderWidth * 2, (config.healthWidth - config.healthBorderWidth * 4) * (self.player.health / 100), config.healthHeight - config.healthBorderWidth * 4)
+  love.graphics.pop()
+
+  -- Health text
+  love.graphics.setFont(self.font)
+  love.graphics.setColor(config.healthColor)
+  love.graphics.printf("Health", 800 - config.healthWidth - 128, 16, 100, "right")
+
+
+  love.graphics.setColor(0.3, 0.3, 0.3)
+  love.graphics.printf("Enemies remaining: " .. #self.enemies, 16, 17, 200)
+
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.printf("Enemies remaining: " .. #self.enemies, 16, 16, 200)
+
 end
 
 function Game:drawMinimap()
@@ -173,11 +199,13 @@ function Game:drawMinimap()
   love.graphics.setColor(1, 1, 1, 0.04)
   love.graphics.rectangle("fill", x * ms, y * ms, c.w * ms, c.h * ms)
   love.graphics.setColor(1, 1, 1, 0.1)
+  love.graphics.setLineWidth(1)
   love.graphics.rectangle("line", x * ms, y * ms, c.w * ms, c.h * ms)
   
 
   -- Border
   love.graphics.setColor(config.minimapBorderColor)
+  love.graphics.setLineWidth(1)
   love.graphics.rectangle("line", 0, 0, config.minimapSize[1], config.minimapSize[2])
 
   love.graphics.pop()
