@@ -87,14 +87,22 @@ function Game:draw()
 
   -- Draw game
   self.planet:draw()
-  self.player:draw()
  
+  self.player:drawShadow(self.planet)
+
+  for e = 1, #self.enemies do
+    if not self.enemies[e].dead then
+      self.enemies[e]:drawShadow(self.planet)
+    end
+  end
+
   for e = 1, #self.entities do
     if not self.entities[e].dead then
       self.entities[e]:draw()
     end
   end
 
+  self.player:draw()
 
   for e = 1, #self.enemies do
     if not self.enemies[e].dead then

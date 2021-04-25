@@ -90,6 +90,25 @@ function Player:shoot()
   self.game:addEntity(bullet)
 end
 
+function Player:drawShadow(planet)
+  love.graphics.push()
+
+  love.graphics.setColor(0, 0, 0, 0.1)
+  
+  -- Translate as we need to draw at 0,0 for rotation
+  love.graphics.translate(self:getX(), self:getY() + 8)
+
+  love.graphics.rotate(self.object:getAngle() + math.pi / 2)
+  local height = planet:getHeightAt(self:getX(), self:getY())
+  local scale = 0.75 + (1 - height) / 3
+  love.graphics.scale(scale, scale)
+  love.graphics.translate(-16, -16)
+
+  love.graphics.draw(self.image)
+
+  love.graphics.pop()
+end
+
 function Player:draw()
   love.graphics.push()
 

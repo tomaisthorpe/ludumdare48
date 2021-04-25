@@ -19,8 +19,7 @@ local Enemy = Class {
 
   dead = false,
   fireRate = 1,
-  lastShot = 0,
-}
+  lastShot = 0, }
 
 function Enemy:getX() 
   return self.object:getX()
@@ -91,6 +90,26 @@ function Enemy:draw()
   -- Translate as we need to draw at 0,0 for rotation
   love.graphics.translate(self:getX(), self:getY())
   love.graphics.rotate(self.object:getAngle() + math.pi / 2)
+  love.graphics.translate(-12, -12)
+
+  love.graphics.draw(self.image)
+
+  love.graphics.pop()
+end
+
+
+function Enemy:drawShadow(planet)
+  love.graphics.push()
+
+  love.graphics.setColor(0, 0, 0, 0.1)
+  
+  -- Translate as we need to draw at 0,0 for rotation
+  love.graphics.translate(self:getX(), self:getY() + 6)
+
+  love.graphics.rotate(self.object:getAngle() + math.pi / 2)
+  local height = planet:getHeightAt(self:getX(), self:getY())
+  local scale = 0.75 + (1 - height) / 3
+  love.graphics.scale(scale, scale)
   love.graphics.translate(-12, -12)
 
   love.graphics.draw(self.image)

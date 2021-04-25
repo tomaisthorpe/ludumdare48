@@ -85,6 +85,21 @@ function Planet:generate()
   end
 end
 
+function Planet:getHeightAt(x, y)
+  x = math.ceil(x / 4)
+  y = math.ceil(y / 4)
+
+  if x > #self.grid then
+    x = #self.grid
+  end
+
+  if y > #self.grid[x] then
+    y = #self.grid[x]
+  end
+
+  return self.grid[x][y]
+end
+
 function Planet:createCanvas()
   self.mapCanvas = love.graphics.newCanvas(self.size[1], self.size[2])
   love.graphics.setCanvas(self.mapCanvas)
