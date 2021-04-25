@@ -66,8 +66,6 @@ function System:resume(prev, status)
     if self.lives == 0 then
       self.canRestart = true
       self.isGameOver = true
-    else
-      love.window.showMessageBox("You were killed.", "Try again. You have ".. self.lives .. " more lives.")
     end
   end
 end

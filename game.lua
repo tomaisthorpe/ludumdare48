@@ -16,6 +16,8 @@ function Game:init()
   Game:calculateScaling()
 
   self.font = love.graphics.newFont("assets/sharetech.ttf", 16)
+  self.fontLarge = love.graphics.newFont("assets/sharetech.ttf", 32)
+
   self.sounds = {
     shoot = love.audio.newSource('assets/shoot.wav', 'static'),
     hit = love.audio.newSource('assets/hit.wav', 'static'),
@@ -30,6 +32,9 @@ end
 
 function Game:enter(prev, planet)
   self.planet = planet
+
+  self.killed = false
+  self.cleared = false
 
   -- Create the player
   self.player = Player(self, self.planet.world, 100, 100)
@@ -54,6 +59,10 @@ function Game:enter(prev, planet)
 end
 
 function Game:update(dt)
+  if self.killed or self.cleared then
+    return
+  end
+
   self.planet:update(dt)
   self.player:update(dt)
 
@@ -77,12 +86,14 @@ function Game:update(dt)
   end
 
   if #self.enemies == 0 then
-    Gamestate.pop("complete")
+    self.state = "complete"
+    self.cleared = true
   end
 end
 
 function Game:gameOver()
-  Gamestate.pop("killed")
+  self.state = "killed"
+  self.killed = true
 end
 
 function Game:enemyKilled()
@@ -154,7 +165,6 @@ function Game:drawUI()
   love.graphics.setColor(config.healthColor)
   love.graphics.printf("Health", 800 - config.healthWidth - 128, 16, 100, "right")
 
-
   love.graphics.setColor(0.3, 0.3, 0.3)
   love.graphics.printf("Enemies remaining: " .. #self.enemies, 16, 17, 200)
 
@@ -171,6 +181,27 @@ function Game:drawUI()
   love.graphics.printf("Click to shoot", 16, 544, 800)
   love.graphics.printf("ESC to quit", 16, 568, 800)
 
+  if self.killed then
+    love.graphics.setFont(self.fontLarge)
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    love.graphics.printf("You've been killed!", 0, 202, 800, "center")
+    love.graphics.printf("Press space to continue.", 0, 232 , 800, "center")
+
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf("You've been killed!", 0, 200, 800, "center")
+    love.graphics.printf("Press space to continue.", 0, 230 , 800, "center")
+  end
+
+  if self.cleared then
+    love.graphics.setFont(self.fontLarge)
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    love.graphics.printf("You cleared this planet!", 0, 202, 800, "center")
+    love.graphics.printf("Press space to continue.", 0, 232 , 800, "center")
+
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf("You cleared this planet!", 0, 200, 800, "center")
+    love.graphics.printf("Press space to continue.", 0, 230 , 800, "center")
+  end
 end
 
 function Game:drawMinimap()
@@ -262,6 +293,9 @@ function Game:calculateScaling()
 end
 
 function Game:keypressed(key)
+  if key == "space" and (self.killed or self.cleared) then
+    Gamestate.pop(self.state)
+  end
   if key == "escape" then 
     love.event.quit()
   end
